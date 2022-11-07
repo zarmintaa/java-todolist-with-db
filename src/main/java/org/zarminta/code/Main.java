@@ -9,7 +9,7 @@ import org.zarminta.code.view.TodoListView;
 
 import javax.sql.DataSource;
 
-public class AplikasiTodoListV2 {
+public class Main {
     public static void main(String[] args) {
         DataSource dataSource = DatabaseUtil.getDataSource();
         TodoListRepository todoListRepository = new TodoListRepositoryImpl(dataSource);

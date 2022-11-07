@@ -2,67 +2,81 @@ package org.zarminta.code.repository;
 
 import org.zarminta.code.entity.TodoList;
 
+import javax.sql.DataSource;
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
+
 public class TodoListRepositoryImpl implements TodoListRepository{
 
-    public TodoList[] data = new TodoList[10];
+    private DataSource dataSource;
+
+    public TodoListRepositoryImpl(DataSource dataSource) {
+        this.dataSource = dataSource;
+    }
 
     @Override
     public TodoList[] getAll() {
-        return data;
-    }
-
-    public boolean isFull(){
-        var isFull = true;
-        for (int i = 0; i < data.length; i++) {
-            if (data[i] == null) {
-                // model masih ada yang kosong
-                isFull = false;
-                break;
+        String sql = "SELECT id, todo FROM todolist";
+        try(Connection connection = dataSource.getConnection();
+            Statement statement = connection.createStatement();
+            ResultSet resultSet = statement.executeQuery(sql)) {
+            List<TodoList>  list = new ArrayList<>();
+            while (resultSet.next()){
+                TodoList todoList = new TodoList();
+                todoList.setId(resultSet.getInt("id"));
+                todoList.setTodo(resultSet.getString("todo"));
+                list.add(todoList);
             }
-        }
-
-        return isFull;
-    }
-
-    public void resizeIsFull(){
-        // jika penuh, kita resize ukuran array 2x lipat
-        if (isFull()) {
-            var temp = data;
-            data = new TodoList[data.length * 2];
-
-            for (int i = 0; i < temp.length; i++) {
-                data[i] = temp[i];
-            }
+            return list.toArray(new TodoList[]{});
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
     }
 
     @Override
     public void add(TodoList todoList) {
-        resizeIsFull();
-        // tambahkan ke posisi yang data array nya NULL
-        for (var i = 0; i < data.length; i++) {
-            if (data[i] == null) {
-                data[i] = todoList;
-                break;
+        String sql = "INSERT INTO todolist(todo) VALUES (?)";
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.setString(1, todoList.getTodo());
+            preparedStatement.executeUpdate();
+        } catch (SQLException e){
+            throw new RuntimeException(e);
+        }
+    }
+
+    private boolean isExist(Integer number){
+        String sql = "SELECT id FROM todolist WHERE id = ?";
+        try(Connection connection = dataSource.getConnection();
+            PreparedStatement preparedStatement = connection.prepareStatement(sql)){
+            preparedStatement.setInt(1, number);
+            try(ResultSet resultSet = preparedStatement.executeQuery()) {
+                if (resultSet.next()){
+                    return true;
+                } else {
+                    return false;
+                }
             }
+        } catch (SQLException exception){
+            throw  new RuntimeException(exception);
         }
     }
 
     @Override
     public boolean remove(Integer number) {
-        if ((number - 1) >= data.length) {
-            return false;
-        } else if (data[number - 1] == null) {
-            return false;
-        } else {
-            for (int i = (number - 1); i < data.length; i++) {
-                if (i == (data.length - 1)) {
-                    data[i] = null;
-                } else {
-                    data[i] = data[i + 1];
-                }
+        if (isExist(number)){
+            String sql = "DELETE FROM todolist WHERE id = ?";
+            try(Connection connection = dataSource.getConnection();
+                PreparedStatement preparedStatement = connection.prepareStatement(sql)){
+                preparedStatement.setInt(1, number);
+                preparedStatement.executeUpdate();
+                return true;
+            } catch (SQLException e){
+                throw new RuntimeException(e);
             }
-            return true;
+        } else {
+            return false;
         }
     }
 }

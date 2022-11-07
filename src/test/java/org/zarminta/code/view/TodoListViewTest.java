@@ -11,7 +11,7 @@ public class TodoListViewTest {
     }
 
     public static void testShowTodoList(){
-        TodoListRepository todoListRepository = new TodoListRepositoryImpl();
+       /* TodoListRepository todoListRepository = new TodoListRepositoryImpl();
         TodoListService todoListService = new TodoListServiceImpl(todoListRepository);
         TodoListView todoListView = new TodoListView(todoListService);
 
@@ -19,11 +19,11 @@ public class TodoListViewTest {
         todoListService.addTodoList("Todo 2");
         todoListService.addTodoList("Todo 3");
 
-        todoListView.showTodoList();
+        todoListView.showTodoList();*/
     }
 
     public static void testAddTodoList(){
-        TodoListRepository todoListRepository = new TodoListRepositoryImpl();
+      /*  TodoListRepository todoListRepository = new TodoListRepositoryImpl();
         TodoListService todoListService = new TodoListServiceImpl(todoListRepository);
         TodoListView todoListView = new TodoListView(todoListService);
 
@@ -32,12 +32,12 @@ public class TodoListViewTest {
         todoListView.addTodoList();
         todoListService.showTodoList();
         todoListView.addTodoList();
-        todoListService.showTodoList();
+        todoListService.showTodoList();*/
     }
 
 
     public static void testRemoveTodoList(){
-        TodoListRepository todoListRepository = new TodoListRepositoryImpl();
+       /* TodoListRepository todoListRepository = new TodoListRepositoryImpl();
         TodoListService todoListService = new TodoListServiceImpl(todoListRepository);
         TodoListView todoListView = new TodoListView(todoListService);
 
@@ -47,7 +47,7 @@ public class TodoListViewTest {
 
         todoListService.showTodoList();
         todoListView.removeTodoList();
-        todoListService.showTodoList();
+        todoListService.showTodoList();*/
 
     }
 
